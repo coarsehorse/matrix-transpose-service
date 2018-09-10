@@ -179,7 +179,7 @@ function listenTransposeMatrixButton() {
                 var content = ev.target.result;
 
                 $.ajax({
-                    url: "http://localhost:8080/transpose",
+                    url: "/transpose",
                     type: 'POST',
                     data: content,
                     headers: {
@@ -221,7 +221,7 @@ function listenTransposeExampleMatrixButton() {
         };
 
         $.ajax({
-            url: "http://localhost:8080/transpose",
+            url: "/transpose",
             type: 'POST',
             data: JSON.stringify(exampleMatrix),
             headers: {

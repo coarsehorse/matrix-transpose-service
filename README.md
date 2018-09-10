@@ -20,6 +20,12 @@ sbt run
 
 Screenshots:
 
-![Welcome screen](sreens/Screenshot_11.png)
-
-![Matrix view + highlighting](sreens/Screenshot_12.png)
+<div>
+    <img src="screens/Screenshot_11.png" width="1000" height="500">
+    <br />
+    <img src="screens/Screenshot_12.png" width="1000" height="500">
+    <br />
+    <center>
+        <img src="screens/mobile.png" width="400" height="800">
+    </center>
+</div>
