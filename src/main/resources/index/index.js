@@ -20,7 +20,39 @@ $(document).ready(function (e) {
     $found.removeClass($classy);
 });
 
-function buildMatrix(jsonMatrix, tableClass) {
+function slideUpHelpPanel() {
+    $('#help-panel').slideUp();
+}
+
+function slideDownHelpPanel() {
+    $('#help-panel').slideDown();
+}
+
+function slideUpMatrixPanel(matrixClassName) {
+    $('.' + matrixClassName).parents().eq(1).first().each(function() {
+        $(this).slideUp();
+    });
+}
+
+function slideDownMatrixPanel(matrixClassName) {
+    $('.' + matrixClassName).parents().eq(1).first().each(function() {
+        $(this).slideDown();
+    });
+}
+
+function listenResetButton() {
+    $('.reset-button').click(function() {
+        slideUpMatrixPanel('transposed-matrix');
+        slideUpMatrixPanel('source-matrix');
+        wipeMatrixTable("transposed-matrix");
+        wipeMatrixTable("source-matrix");
+        setTableInvisible("transposed-matrix");
+        setTableInvisible("source-matrix");
+        slideDownHelpPanel();
+    });
+}
+
+function fillMatrixTable(tableClass, jsonMatrix) {
     $.each(jsonMatrix, function (rowInd, row) {
         $("table." + tableClass + " tbody").append("<tr></tr>");
         $.each(row, function (colInd, col) {
@@ -29,7 +61,7 @@ function buildMatrix(jsonMatrix, tableClass) {
     });
 }
 
-function generateRequestExampleJson() {
+function listenGenerateExampleButton() {
     function download(data, filename, type) {
         var file = new Blob([data], {type: type});
         if (window.navigator.msSaveOrOpenBlob) // IE10+
@@ -41,7 +73,7 @@ function generateRequestExampleJson() {
             a.download = filename;
             document.body.appendChild(a);
             a.click();
-            setTimeout(function() {
+            setTimeout(function () {
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
             }, 0);
@@ -49,11 +81,12 @@ function generateRequestExampleJson() {
     }
 
     var jsonRequest = {
-        "id": "1",
-        "sourceMatrix": [[1, 2, 3, 4, 5, 6], [-1, -2, -3, -4, -5, -6], [11, 12, 13, 14, 15, 16]]
+        "sourceMatrix": [[1, 2, 3], [-1, -2, -3], [11, 12, 13]]
     };
 
-    download(JSON.stringify(jsonRequest, null, 2), "requestExample.json", "application/json");
+    $(".generate-example").click( function () {
+        download(JSON.stringify(jsonRequest, null, 2), "requestExample.json", "application/json")
+    });
 }
 
 function highlightTransposedCells() {
@@ -100,16 +133,43 @@ function highlightTransposedCells() {
     })
 }
 
-function showTables() {
-    $(".show-button").click(function () {
-        $(".table-wrapper, .empty-label").each(function () {
-            $(this).toggleClass("hidden")
-        })
-    })
+/* Set table visible and special info label invisible.
+*  When page loads at the first time - there is no data to build table,
+*  thus page shows "empty label" instead.
+*  When table will be first time builded this method will hide the label
+*  and set the table visible. */
+function setTableVisible(tableName) {
+    $("." + tableName).parent().first().each(function () {
+        $(this).removeClass("hidden")
+    });
+    $("." + tableName).parents().eq(1).find(".empty-label").each(function () {
+        $(this).addClass("hidden")
+    });
 }
 
-function readMatrixFromFile() {
-    $(".read-matrix").on('change', function(evt) {
+/* Reverse for the setTableVisible function.
+*  For more details, look at setTableVisible description. */
+function setTableInvisible(tableName) {
+    $("." + tableName).parent().first().each(function () {
+        $(this).addClass("hidden")
+    });
+    $("." + tableName).parents().eq(1).find(".empty-label").each(function () {
+        $(this).removeClass("hidden")
+    });
+}
+
+function wipeMatrixTable(tableName) {
+    $("." + tableName + " tbody").each(function () {
+        $(this).remove()
+    });
+    $("." + tableName).each(function () {
+        $(this).append("<tbody></tbody>")
+    });
+}
+
+function listenTransposeMatrixButton() {
+    $(".read-matrix").on('change', function (evt) {
+        var input = $(this);
         var file = evt.target.files[0];
 
         if (file) {
@@ -117,6 +177,7 @@ function readMatrixFromFile() {
 
             reader.onload = function (ev) {
                 var content = ev.target.result;
+
                 $.ajax({
                     url: "http://localhost:8080/transpose",
                     type: 'POST',
@@ -125,9 +186,20 @@ function readMatrixFromFile() {
                         'Content-Type': 'application/json'
                     },
                     success: function (data, status) {
-                        alert("2Data: " + data + "\nStatus: " + status);
+                        setTableVisible("source-matrix");
+                        setTableVisible("transposed-matrix");
+                        wipeMatrixTable("source-matrix");
+                        wipeMatrixTable("transposed-matrix");
+                        fillMatrixTable("source-matrix", data["sourceMatrix"]);
+                        fillMatrixTable("transposed-matrix", data["transposedMatrix"]);
+                        highlightTransposedCells();
+                        slideUpHelpPanel();
+                        slideDownMatrixPanel('source-matrix');
+                        slideDownMatrixPanel('transposed-matrix');
                     }
                 });
+                // Reset the input element to be able to trigger on the same file
+                input.val("");
             };
 
             reader.readAsText(file);
@@ -137,33 +209,43 @@ function readMatrixFromFile() {
     });
 }
 
-$(document).ready(function () {
-    $(".post-button").click(function () {
-        /*$.get("http://localhost:8080/test", function (data, status) {
-            /!*buildMatrix(data["transposedMatrix"], "transposed-matrix");
-            buildMatrix(data["sourceMatrix"], "source-matrix");*!/
-            alert("status: " + status + "\n" + "source-matrix: " + data["sourceMatrix"]);
-        });*/
-        /*$.post("http://localhost:8080/transpose",
-            {
-                "sourceMatrix": [[1, 2, 3, 4, 5, 6], [-1, -2, -3, -4, -5, -6]]
+function listenTransposeExampleMatrixButton() {
+    $(".transpose-example-matrix").click(function () {
+        var exampleMatrix = {
+            "sourceMatrix":[
+                [1,2,3,4,5,6],
+                [-1,-2,-3,-4,-5,-6],
+                [11,12,13,14,15,16],
+                [7,8,9,10,11,12],
+                [-11,-12,-13,-14,-15,-16]]
+        };
+
+        $.ajax({
+            url: "http://localhost:8080/transpose",
+            type: 'POST',
+            data: JSON.stringify(exampleMatrix),
+            headers: {
+                'Content-Type': 'application/json'
             },
-            function(data, status){
-                alert("1Data: " + data + "\nStatus: " + status);
-            });*/
+            success: function (data, status) {
+                setTableVisible("source-matrix");
+                setTableVisible("transposed-matrix");
+                wipeMatrixTable("source-matrix");
+                wipeMatrixTable("transposed-matrix");
+                fillMatrixTable("source-matrix", data["sourceMatrix"]);
+                fillMatrixTable("transposed-matrix", data["transposedMatrix"]);
+                highlightTransposedCells();
+                slideUpHelpPanel();
+                slideDownMatrixPanel('source-matrix');
+                slideDownMatrixPanel('transposed-matrix');
+            }
+        });
+    })
+}
 
-    });
-
-    var json = {
-        "id": "1",
-        "sourceMatrix": [[1, 2, 3, 4, 5, 6], [-1, -2, -3, -4, -5, -6], [11, 12, 13, 14, 15, 16]],
-        "transposedMatrix": [[1, -1, 11], [2, -2, 12], [3, -3, 13], [4, -4, 14], [5, -5, 15], [6, -6, 16]]
-    };
-    buildMatrix(json["transposedMatrix"], "transposed-matrix");
-    buildMatrix(json["sourceMatrix"], "source-matrix");
-
-    readMatrixFromFile();
-
-    highlightTransposedCells();
-    showTables();
+$(document).ready(function () {
+    listenTransposeMatrixButton();
+    listenTransposeExampleMatrixButton();
+    listenGenerateExampleButton();
+    listenResetButton();
 });

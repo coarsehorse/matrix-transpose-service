@@ -10,53 +10,67 @@
 </head>
 <body>
 <div class="container">
-    <h2><label>Matrix server</label></h2>
+    <h2><label>Matrix transpose service</label></h2>
+
+    <!--Help Panel-->
+    <div class="panel panel-success">
+        <div class="panel-heading clickable">
+            <h3 class="panel-title">Help</h3>
+        </div>
+        <div class="panel-body" id="help-panel">
+            <p>Use <code>Generate example file</code> button to get example of valid matrix for input.</p>
+            <p>Then you can modify example and transpose it via <code>Transpose matrix</code> button.</p>
+            <p>Or for quick overview of application use <code>Transpose example matrix</code> button</p>
+            <p>Table supports cell highlighting on mouse hover. It shows transposed element position. Try it!</p>
+        </div>
+    </div>
 
     <!--Source Matrix Panel-->
-    <div class="panel panel-primary <!--autocollapse-->">
+    <div class="panel panel-primary autocollapse">
         <div class="panel-heading clickable">
             <h3 class="panel-title">Source matrix</h3>
         </div>
         <div class="panel-body">
             <!--Source Matrix Table-->
-            <div class="table-wrapper center-block table-block">
+            <div class="table-wrapper center-block table-block hidden">
                 <table class="table table-bordered source-matrix">
                     <tbody>
                     </tbody>
                 </table>
             </div>
             <!--When tables are empty-->
-            <div class="empty-label hidden">
-                <label>Empty</label>
+            <div class="empty-label">
+                <label>Empty matrix</label>
             </div>
         </div>
     </div>
 
     <!--Transposed Matrix Panel-->
-    <div class="panel panel-primary <!--autocollapse-->">
+    <div class="panel panel-primary autocollapse">
         <div class="panel-heading clickable">
             <h3 class="panel-title">Transposed matrix</h3>
         </div>
         <div class="panel-body">
             <!--Transposed Matrix Table-->
-            <div class="table-wrapper center-block table-block">
+            <div class="table-wrapper center-block table-block hidden">
                 <table class="table table-bordered transposed-matrix">
                     <tbody>
                     </tbody>
                 </table>
             </div>
             <!--When tables are empty-->
-            <div class="empty-label hidden">
-                <label>Empty</label>
+            <div class="empty-label">
+                <label>Empty matrix</label>
             </div>
         </div>
     </div>
 
-    <button class="btn btn-primary post-button">Select matrix</button>
-    <button class="btn btn-danger show-button">Example matrix</button>
-    <label class="btn btn-default">
-        Browse <input class="hidden read-matrix" type="file"/>
+    <label class="btn btn-primary transpose-matrix">
+        Transpose matrix <input class="hidden read-matrix" type="file"/>
     </label>
+    <button class="btn btn-danger transpose-example-matrix">Transpose example matrix</button>
+    <button class="btn btn-info generate-example">Generate example file</button>
+    <button class="btn btn-warning reset-button">Reset</button>
 </div>
 </body>
 </html>

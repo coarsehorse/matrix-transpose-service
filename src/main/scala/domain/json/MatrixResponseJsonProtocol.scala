@@ -5,5 +5,5 @@ import domain.MatrixResponse
 import spray.json.DefaultJsonProtocol
 
 trait MatrixResponseJsonProtocol extends SprayJsonSupport with DefaultJsonProtocol {
-  implicit val responseFormat = jsonFormat3(MatrixResponse)
+  implicit val responseFormat = jsonFormat2(MatrixResponse)
 }
