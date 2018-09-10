@@ -20,12 +20,10 @@ sbt run
 
 Screenshots:
 
-<div>
-    <img src="screens/Screenshot_11.png" width="1000" height="500">
-    <br />
-    <img src="screens/Screenshot_12.png" width="1000" height="500">
-    <br />
-    <center>
-        <img src="screens/mobile.png" width="400" height="800">
-    </center>
-</div>
+<img src="screens/Screenshot_11.png" width="1000" height="500">
+
+<img src="screens/Screenshot_12.png" width="1000" height="500">
+
+<p align="center">
+    <img src="screens/mobile.png" width="500" height="850">
+</p>
